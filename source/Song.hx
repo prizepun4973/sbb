@@ -132,6 +132,9 @@ class Song
 		var songJson:Dynamic = parseJSONshit(rawJson);
 		if(jsonInput != 'events') funkin.game.data.StageData.loadDirectory(songJson);
 		onLoadJson(songJson);
+
+		PlayState.prevSongTime = 0;
+
 		return songJson;
 	}
 

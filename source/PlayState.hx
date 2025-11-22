@@ -1333,6 +1333,9 @@ class PlayState extends MusicBeatState
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 		}
+
+		doLostFrames();
+
 		callOnLuas('onCreatePost', []);
 
 		super.create();
@@ -1356,8 +1359,6 @@ class PlayState extends MusicBeatState
 		
 		CustomFadeTransition.nextCamera = camOther;
 		if(eventNotes.length < 1) checkEventNote();
-
-		doLostFrames();
 	}
 
 	#if (!flash && sys)
@@ -2291,6 +2292,7 @@ class PlayState extends MusicBeatState
 
 	public function setSongTime(time:Float)
 	{
+
 		if(time < 0) time = 0;
 
 		FlxG.sound.music.pause();
@@ -2310,6 +2312,8 @@ class PlayState extends MusicBeatState
 		songTime = time;
 
 		doLostFrames();
+
+		prevSongTime = Conductor.songPosition;
 	}
 
 	function startNextDialogue() {
@@ -2324,6 +2328,7 @@ class PlayState extends MusicBeatState
 	var previousFrameTime:Int = 0;
 	var lastReportedPlayheadPosition:Int = 0;
 	public var songTime:Float = 0;
+	public static var prevSongTime:Float = 0;
 
 	function startSong():Void
 	{
@@ -5235,14 +5240,57 @@ class PlayState extends MusicBeatState
 	}
 
 	private function doLostFrames() {
-		updateCurStep();
-		trace(curStep);
-		if (luaArray.length > 0) {
-			for (i in 0...(curStep + 1)) {
-				setOnLuas("curStep", i);
-				setOnLuas("curBeat", Math.floor(i / 4));
-				callOnLuas("onStepHit", [curStep]);
-				callOnLuas("onBeatHit", [Math.floor(i / 4)]);
+		if (ClientPrefs.softLostFrame) {
+			updateCurStep();
+			trace(curStep);
+			if (luaArray.length > 0) {
+				for (i in 0...(curStep + 1)) {
+					setOnLuas("curStep", i);
+					setOnLuas("curBeat", Math.floor(i / 4));
+					callOnLuas("onStepHit", [curStep]);
+					callOnLuas("onBeatHit", [Math.floor(i / 4)]);
+				}
+			}
+		}
+		else {
+			// trace(songTime);
+			var elapsed:Float = 1 / FlxG.updateFramerate;
+			if (songTime > 0) {
+				var startOnTime = songTime;
+				songTime = 0;
+				Conductor.songPosition = - Conductor.crochet * 5;
+				// trace(Math.floor((startOnTime + (Conductor.crochet * 5)) / 1000));
+				for (i in 0...Math.floor(Math.max(startOnTime + (Conductor.crochet * 5) - prevSongTime, 0) / 1000 * FlxG.updateFramerate)) {
+					callOnLuas("onUpdate", [1 / FlxG.updateFramerate]);
+
+					updateCurStep();
+					updateBeat();
+
+					setOnLuas('curDecStep', curDecStep);
+					setOnLuas('curDecBeat', curDecBeat);
+
+					setOnLuas('curStep', curStep);
+					setOnLuas('curBeat', curBeat);
+
+					callOnLuas('onStepHit', []);
+					callOnLuas('onBeatHit', []);
+
+					songTime += FlxG.game.ticks - previousFrameTime;
+					previousFrameTime = FlxG.game.ticks;
+
+					Conductor.songPosition += elapsed * 1000 * playbackRate;
+
+					// Interpolation type beat
+					if (Conductor.lastSongPos != Conductor.songPosition)
+					{
+						songTime = (songTime + Conductor.songPosition) / 2;
+						Conductor.lastSongPos = Conductor.songPosition;
+						// Conductor.songPosition += FlxG.elapsed * 1000;
+						// trace('MISSED FRAME');
+					}
+
+					callOnLuas("onUpdatePost", [1 / FlxG.updateFramerate]);
+				}
 			}
 		}
 	}
