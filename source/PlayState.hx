@@ -1334,9 +1334,9 @@ class PlayState extends MusicBeatState
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 		}
 
-		doLostFrames();
-
 		callOnLuas('onCreatePost', []);
+
+		if (startOnTime > 0) doLostFrames();
 
 		super.create();
 
@@ -2332,6 +2332,10 @@ class PlayState extends MusicBeatState
 
 	function startSong():Void
 	{
+
+		setOnLuas('songLength', songLength);
+		callOnLuas('onSongStart', []);
+
 		startingSong = false;
 
 		previousFrameTime = FlxG.game.ticks;
@@ -2373,8 +2377,6 @@ class PlayState extends MusicBeatState
 		// Updating Discord Rich Presence (with Time Left)
 		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter(), true, songLength);
 		#end
-		setOnLuas('songLength', songLength);
-		callOnLuas('onSongStart', []);
 	}
 
 	var debugNum:Int = 0;
