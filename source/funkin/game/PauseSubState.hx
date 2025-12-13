@@ -25,7 +25,7 @@ class PauseSubState extends BuiltinJITSubState
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
 	var menuItems:Array<String> = [];
-	var menuItemsOG:Array<String> = ['Resume', 'Restart Song', 'Options', 'Change Difficulty', 'Exit to menu'];
+	var menuItemsOG:Array<String> = ['Resume', 'Restart Song', 'Options', 'Exit to menu'];
 	var difficultyChoices = [];
 	var curSelected:Int = 0;
 
@@ -41,7 +41,6 @@ class PauseSubState extends BuiltinJITSubState
 	public function new(x:Float, y:Float)
 	{
 		super("PauseSubState");
-		if(CoolUtil.difficulties.length < 2) menuItemsOG.remove('Change Difficulty'); //No need to change difficulty if there is only one!
 
 		if(PlayState.chartingMode)
 		{
@@ -222,10 +221,6 @@ class PauseSubState extends BuiltinJITSubState
 				case "Options":
 					MusicBeatState.switchState(new funkin.options.OptionsState(new PlayState()));
 					FlxG.sound.playMusic(Paths.music('freakyMenu'), 1, true);
-				case 'Change Difficulty':
-					menuItems = difficultyChoices;
-					deleteSkipTimeText();
-					regenMenu();
 				case 'Toggle Practice Mode':
 					PlayState.instance.practiceMode = !PlayState.instance.practiceMode;
 					PlayState.changedDifficulty = true;

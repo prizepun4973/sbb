@@ -2,6 +2,7 @@ package funkin.editors.chart.action;
 
 import funkin.editors.chart.ChartEditorState;
 import funkin.editors.chart.element.GuiNote;
+import flixel.FlxG;
 
 class NoteRemoveAction extends ChartEditorState.EditorAction {
     private var _note:GuiNote;

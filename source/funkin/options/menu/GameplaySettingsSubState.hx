@@ -181,7 +181,7 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		option.changeValue = 0.1;
 		addOption(option);
 
-		var option:Option = new Option('Delay And Combo', 'Press Confirm to switch to the\nAdjust Screen.', '', 'bool', false);
+		var option:Option = new Option('Delay And Combo', 'Press Confirm to switch to the Adjust Screen.', '', 'bool', false);
 		option.onChange = function () { LoadingState.loadAndSwitchState(new NoteOffsetState(funkin.options.OptionsState.INSTANCE.parent)); };
 		addOption(option);
 

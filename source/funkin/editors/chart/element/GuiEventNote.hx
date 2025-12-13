@@ -17,11 +17,11 @@ class GuiEventNote extends GuiElement {
         setGraphicSize(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE);
         centerOffsets();
         centerOrigin();
+
+        updatePos();
     }
 
-    override function update(elapsed:Float) {
-        super.update(elapsed);
-
+    override function updatePos() {
         x = ChartEditorState.INSTANCE.nextGridBG.x - ChartEditorState.GRID_SIZE - 3;
         y = (ChartEditorState.Y_OFFSET - ChartEditorState.GRID_SIZE - 3) - ((Conductor.songPosition - ChartEditorState.calcY(strumTime)) * ChartEditorState.GRID_SIZE / Conductor.crochet * 4);
         alpha = strumTime < Conductor.songPosition ? 0.6 : 1;

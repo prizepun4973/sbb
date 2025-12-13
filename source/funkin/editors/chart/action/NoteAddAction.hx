@@ -2,13 +2,14 @@ package funkin.editors.chart.action;
 
 import funkin.editors.chart.ChartEditorState;
 import funkin.editors.chart.element.GuiNote;
+import flixel.FlxG;
 
 class NoteAddAction extends ChartEditorState.EditorAction {
     private var _note:GuiNote;
 
     public var strumTime:Float;
     public var noteData:Int;
-
+    
     public function new(strumTime, noteData) {
         super();
 

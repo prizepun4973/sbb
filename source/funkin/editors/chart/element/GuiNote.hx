@@ -48,11 +48,11 @@ class GuiNote extends GuiElement{
 
         parent.add(susTail);
         parent.add(this);
+
+        updatePos();
     }
 
-    override function update(elapsed:Float) {        
-        super.update(elapsed);
-
+    override function updatePos() {        
         var crochet:Float = (60 / Conductor.getBPMFromSeconds(Conductor.songPosition).bpm) * 1000;
 
         x =  ChartEditorState.INSTANCE.nextGridBG.x - ChartEditorState.GRID_SIZE * 1.5 + (noteData + 1) * ChartEditorState.GRID_SIZE + 2;
