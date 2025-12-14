@@ -47,6 +47,7 @@ class ChartEditorState extends BuiltinJITState {
     
     public var paused:Bool = true;
     public static var timeline:Array<EditorAction> = new Array();
+    public static var curAction:Int = -1;
 
     public var beatSnap:Int = 32;
 
@@ -70,7 +71,7 @@ class ChartEditorState extends BuiltinJITState {
 
     private var textPanel:FlxText;
     public var crosshair:Crosshair;
-    public var selected:Array<GuiElement> = new Array();
+    public var selectIndicator:FlxTypedGroup<SelectIndicator> = new FlxTypedGroup();
     
     public static function reset() {
         lastPos = 0;
@@ -78,6 +79,7 @@ class ChartEditorState extends BuiltinJITState {
         nextUpdateTime = 0;
         curSec = 0;
         timeline = new Array<EditorAction>();
+        curAction = -1;
     }
     
     public static function getMousePos() {
@@ -278,7 +280,6 @@ class ChartEditorState extends BuiltinJITState {
             sectionBPM.push(lastBPM);
         }
 
-
         /*
             audio
         */
@@ -327,6 +328,7 @@ class ChartEditorState extends BuiltinJITState {
         eventSplitLine = new FlxSprite(nextGridBG.x + GRID_SIZE, 0).makeGraphic(2, Std.int(nextGridBG.height), FlxColor.BLACK);
         gridGroup.add(eventSplitLine);
 
+        add(selectIndicator);
         add(renderNotes);
 
         for (section in _song.notes) {
@@ -417,33 +419,90 @@ class ChartEditorState extends BuiltinJITState {
             StageData.loadDirectory(_song);
             LoadingState.loadAndSwitchState(new PlayState());
         }
-
         if (((FlxG.mouse.wheel > 0 && Conductor.songPosition > 0) || (FlxG.mouse.wheel < 0 && Conductor.songPosition < FlxG.sound.music.length)) && paused)
             Conductor.songPosition -= Conductor.crochet / 4 * FlxG.mouse.wheel;
-
         if (FlxG.keys.justPressed.SPACE) pause();
 
+        // selection
+        if (FlxG.mouse.justPressed && crosshair.target != null) {
+            if (FlxG.keys.pressed.CONTROL) {
+                var isSelected:Bool = false;
+                selectIndicator.forEachAlive(function (indicator:SelectIndicator) {
+                    if (indicator.target == crosshair.target) isSelected = true;
+                });
+
+                if (!isSelected) selectIndicator.add(new SelectIndicator(crosshair.target));
+                else selectIndicator.forEachAlive(function (indicator:SelectIndicator) {
+                    if (indicator.target == crosshair.target) selectIndicator.remove(indicator);
+                });
+            }
+        }
+
+        // undo / redo
+        if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.Z && curAction > -1) {
+            timeline[curAction].undo();
+            curAction--;
+        }
+        if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.Y && curAction < timeline.length - 1) {
+            curAction++;
+            timeline[curAction].redo();
+        }
+
+        if (curAction >= timeline.length - 1) curAction = timeline.length - 1;
+        if (curAction < -1) curAction = -1;
+
+        // wip
         if (FlxG.keys.anyJustPressed(ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_1')))) {
             funkin.component.MusicBeatState.switchState(new funkin.editors.ChartingState());
         }
+    }
+
+    function addAction(action:EditorAction) {
+        curAction++;
+        trace("hi");
+        timeline.push(action);
     }
 
     function actionListener() {
         if (crosshair.visible) {
             if (FlxG.mouse.x > gridBG.x + GRID_SIZE) {
                 if (FlxG.mouse.pressed && !FlxG.keys.pressed.CONTROL && !FlxG.keys.pressed.SHIFT && crosshair.target == null && paused) {
-                    timeline.push(new NoteAddAction(
+                    addAction(new NoteAddAction(
                         crosshair.chained? crosshair.chainedMousePos : getMousePos(), 
                         Math.floor((FlxG.mouse.x - gridBG.x - GRID_SIZE) / GRID_SIZE))
                     );
                 }
 
                 if (FlxG.mouse.pressedRight && !FlxG.keys.pressed.CONTROL && !FlxG.keys.pressed.SHIFT && Std.isOfType(crosshair.target, GuiNote) && paused) {
-                    timeline.push(new NoteRemoveAction(cast (crosshair.target, GuiNote)));
+                    addAction(new NoteRemoveAction([cast (crosshair.target, GuiNote)]));
                 }
             }
         }
         
+    }
+}
+
+class SelectIndicator extends FlxSprite {
+    public var target:GuiElement;
+
+    public function new(target:GuiElement) {
+        super(0, 0);
+
+        this.target = target;
+
+        makeGraphic(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE, 0xff00FFFF);
+
+        updatePos();
+    }
+
+    override function update(elapsed:Float) {
+        super.update(elapsed);
+        updatePos();
+    }
+
+    function updatePos() {
+        x = target.x + ChartEditorState.GRID_SIZE * 1.5 - 2;
+        y = target.y + ChartEditorState.GRID_SIZE * 1.5;
     }
 }
 
@@ -478,7 +537,7 @@ class Crosshair extends FlxSprite {
                 var hitboxScale = 16 / editor.beatSnap * ChartEditorState.GRID_SIZE;
                 var element:GuiElement = cast (sprite, GuiElement);
                 var x1:Float = element.x + GRID_SIZE * 1.5 - 2;
-                var y1:Float = element.y + sprite.height / 2 - hitboxScale / 2;
+                var y1:Float = element.y + GRID_SIZE * 1.5;
                 var x2:Float = x1 + GRID_SIZE;
                 var y2:Float = y1 + hitboxScale;
 
@@ -511,6 +570,6 @@ class GuiElement extends FlxSprite {
 
 abstract class EditorAction {
     public function new() {}
-    public function redo() {}
-    public function undo() {}
+    public function redo() { ChartEditorState.curAction++; }
+    public function undo() { ChartEditorState.curAction--; }
 }
