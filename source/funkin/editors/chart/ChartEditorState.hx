@@ -420,7 +420,7 @@ class ChartEditorState extends BuiltinJITState {
             LoadingState.loadAndSwitchState(new PlayState());
         }
         if (((FlxG.mouse.wheel > 0 && Conductor.songPosition > 0) || (FlxG.mouse.wheel < 0 && Conductor.songPosition < FlxG.sound.music.length)) && paused)
-            Conductor.songPosition -= Conductor.crochet / 4 * FlxG.mouse.wheel;
+            Conductor.songPosition -= Conductor.crochet * FlxG.mouse.wheel;
         if (FlxG.keys.justPressed.SPACE) pause();
 
         // selection
@@ -438,20 +438,30 @@ class ChartEditorState extends BuiltinJITState {
             }
         }
 
+        if (FlxG.keys.pressed.DELETE) {
+            var deleteNotes:Array<GuiNote> = new Array();
+
+            selectIndicator.forEachAlive(function (indicator:SelectIndicator) {
+                if (Std.isOfType(indicator.target, GuiNote)) deleteNotes.push(cast (indicator.target, GuiNote)); 
+            });
+
+            if (deleteNotes.length > 0) addAction(new NoteRemoveAction(deleteNotes));
+        }
+
         // undo / redo
         if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.Z && undos.length > 0) {
             undos[undos.length - 1].undo();
             redos.push(undos[undos.length - 1]);
             undos.pop();
-            trace(undos);
-            trace(redos);
+            // trace(undos);
+            // trace(redos);
         }
         if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.Y && redos.length > 0) {
             redos[redos.length - 1].redo();
             undos.push(redos[redos.length - 1]);
             redos.remove(redos[redos.length - 1]);
-            trace(undos);
-            trace(redos);
+            // trace(undos);
+            // trace(redos);
         }
 
         // wip
@@ -480,7 +490,6 @@ class ChartEditorState extends BuiltinJITState {
                 }
             }
         }
-        
     }
 }
 

@@ -12,8 +12,10 @@ typedef NoteRemoveData = {
     var susLength:Float;
     var noteType:String;
     var relatedAction:NoteAddAction;
+    var wasSelected:Bool;
 }
 
+// TODO: ElementRemoveAction
 class NoteRemoveAction extends ChartEditorState.EditorAction {
     private var notes:Array<GuiNote> = new Array();
     public var removedNote:Array<NoteRemoveData> = new Array();
@@ -23,12 +25,18 @@ class NoteRemoveAction extends ChartEditorState.EditorAction {
         super();
 
         for (note in notes) {
+            var result:Bool = false;
+            ChartEditorState.INSTANCE.selectIndicator.forEachAlive(function (indicator:SelectIndicator) {
+                if (indicator.target == note) result = true;
+            });
+
             var data:NoteRemoveData = {
                 strumTime: note.strumTime,
                 noteData: note.noteData,
                 susLength: note.susLength,
                 noteType: note.noteType,
-                relatedAction: note.relatedAction
+                relatedAction: note.relatedAction,
+                wasSelected: result
             };
             removedNote.push(data);
 
@@ -54,14 +62,16 @@ class NoteRemoveAction extends ChartEditorState.EditorAction {
 
     override function undo() {
         for (removed in removedNote) {
+            // trace(removed);
+
             var note:GuiNote = new GuiNote(removed.strumTime, removed.noteData, removed.susLength, removed.relatedAction);
             note.noteType = removed.noteType;
             
             notes.push(note);
-            trace(note);
+            // trace(note);
 
             ChartEditorState.INSTANCE.renderNotes.add(note);
-            // ChartEditorState.INSTANCE.selectIndicator.add(new SelectIndicator(note));
+            if (removed.wasSelected) ChartEditorState.INSTANCE.selectIndicator.add(new SelectIndicator(note));
         }
     }
 }
