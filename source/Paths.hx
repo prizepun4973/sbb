@@ -194,6 +194,17 @@ class Paths
 			
 		return 'mods/' + key + '.lua';
 	}
+	static public function hscript(key:String, ?library:String)
+	{
+		if (FileSystem.exists(mods(currentModDirectory + '/' + key + '.hx')) && currentModDirectory != "") {
+			return mods(currentModDirectory + '/' + key + '.hx');
+		}
+		else if (FileSystem.exists(getPreloadPath(key + '.hx'))) {
+			return getPreloadPath(key + '.hx');
+		}
+			
+		return 'mods/' + key + '.hx';
+	}
 
 	static public function video(key:String)
 	{
@@ -249,17 +260,6 @@ class Paths
 		// streamlined the assets process more
 		var returnAsset:FlxGraphic = returnGraphic(key, library);
 		return returnAsset;
-	}
-
-	static public function getStateLua(lua:String):String {
-		if (FileSystem.exists(mods(currentModDirectory + '/scripts/' + 'states/' + lua + '.lua'))) {
-			return mods(currentModDirectory + '/scripts/' + 'states/' + lua + '.lua');
-		}
-		else if (FileSystem.exists(getPreloadPath('scripts/' + 'states/' + lua + '.lua'))) {
-			return getPreloadPath('scripts/' + 'states/' + lua + '.lua');
-		}
-			
-		return 'mods/scripts/' + 'states/' + lua + '.lua';
 	}
 
 	static public function getTextFromFile(key:String, ?ignoreMods:Bool = false):String
