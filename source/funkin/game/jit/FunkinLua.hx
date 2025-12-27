@@ -42,11 +42,11 @@ import sys.io.File;
 import Type.ValueType;
 import funkin.options.Controls;
 import funkin.game.component.cutscene.DialogueBoxPsych;
-#if hscript
+
 import hscript.Parser;
 import hscript.Interp;
 import hscript.Expr;
-#end
+
 #if desktop
 import Discord;
 #end
@@ -76,9 +76,7 @@ class FunkinLua
 	public var scriptName:String = '';
 	public var closed:Bool = false;
 
-	#if hscript
 	public static var hscript:HScript = null;
-	#end
 
 	public function new(script:String)
 	{
@@ -910,7 +908,6 @@ class FunkinLua
 		{
 			var retVal:Dynamic = null;
 
-			#if hscript
 			initHaxeModule();
 			try
 			{
@@ -920,9 +917,6 @@ class FunkinLua
 			{
 				luaTrace(scriptName + ":" + lastCalledFunction + " - " + e, false, false, FlxColor.RED);
 			}
-			#else
-			luaTrace("runHaxeCode: HScript isn't supported on this platform!", false, false, FlxColor.RED);
-			#end
 
 			if (retVal != null && !isOfTypes(retVal, [Bool, Int, Float, String, Array]))
 				retVal = null;
@@ -931,7 +925,6 @@ class FunkinLua
 
 		Lua_helper.add_callback(lua, "addHaxeLibrary", function(libName:String, ?libPackage:String = '')
 		{
-			#if hscript
 			initHaxeModule();
 			try
 			{
@@ -945,7 +938,6 @@ class FunkinLua
 			{
 				luaTrace(scriptName + ":" + lastCalledFunction + " - " + e, false, false, FlxColor.RED);
 			}
-			#end
 		});
 
 		Lua_helper.add_callback(lua, "loadSong", function(?name:String = null, ?difficultyNum:Int = -1)
@@ -3118,7 +3110,6 @@ class FunkinLua
 		return false;
 	}
 
-	#if hscript
 	public function initHaxeModule()
 	{
 		if (hscript == null)
@@ -3127,7 +3118,6 @@ class FunkinLua
 			hscript = new HScript(); // TO DO: Fix issue with 2 scripts not being able to use the same variable names
 		}
 	}
-	#end
 
 	public static function setVarInArray(instance:Dynamic, variable:String, value:Dynamic):Any
 	{
@@ -3807,7 +3797,6 @@ class CustomSubstate extends MusicBeatSubstate
 	}
 }
 
-#if hscript
 class HScript
 {
 	public static var parser:Parser = new Parser();
@@ -3874,4 +3863,3 @@ class HScript
 		return interp.execute(HScript.parser.parseString(codeToRun));
 	}
 }
-#end

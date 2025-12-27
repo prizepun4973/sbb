@@ -33,7 +33,6 @@ import haxe.zip.Uncompress;
 import haxe.zip.Writer;*/
 
 import funkin.jit.BuiltinJITState;
-import funkin.jit.LuaObject;
 
 import funkin.component.*;
 import funkin.menu.*;

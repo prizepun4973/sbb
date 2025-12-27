@@ -8,12 +8,20 @@ import lime.utils.Assets as LimeAssets;
 import lime.utils.AssetLibrary;
 import lime.utils.AssetManifest;
 import flixel.sound.FlxSound;
+import flixel.FlxState;
+import flixel.FlxSubState;
+import flixel.tweens.FlxEase;
+import openfl.display.BlendMode;
 #if sys
 import sys.io.File;
 import sys.FileSystem;
 #else
 import openfl.utils.Assets;
 #end
+
+import funkin.options.menu.*;
+import funkin.menu.*;
+import funkin.jit.*;
 
 using StringTools;
 
@@ -162,5 +170,160 @@ class CoolUtil
 		var colorNum:Null<FlxColor> = FlxColor.fromString(color);
 		if(colorNum == null) colorNum = FlxColor.fromString('#$color');
 		return colorNum != null ? colorNum : FlxColor.WHITE;
+	}
+
+	public static function getStateByString(state:String):FlxState {
+		switch(state) {
+			default:
+				return new funkin.jit.LuaState(state);
+			case "CreditsState":
+				return new CreditsState();
+			case "FlashingState":
+				return new FlashingState();
+			case "FreeplayState":
+				return new FreeplayState();
+			case "MainMenuState":
+				return new MainMenuState();
+			case "StoryMenuState":
+				return new StoryMenuState();
+			case "TitleState":
+				return new TitleState();
+			case "PlayState":
+				return new PlayState();
+		}
+	}
+
+	public static function getSubStateByString(name:String):FlxSubState {
+		switch (name) {
+			default:
+				return new LuaSubState(name);
+			case "GameplayChangersSubState":
+				return new GameplayChangersSubstate();
+			// case "Prompt":
+			// 	target = new Prompt();
+			// case "ResetScoreSubState":
+			// 	target = new ResetScoreSubState();
+			case "ControlsSubState":
+				return new ControlsSubState();
+			case "BaseOptionsMenu":
+				return new BaseOptionsMenu();
+			case "GameplaySettingsSubState":
+				return new GameplaySettingsSubState();
+			case "GraphicsSettingsSubState":
+				return new GraphicsSettingsSubState();
+		}
+	}
+
+	// Better optimized than using some getProperty shit or idk
+	public static function getFlxEaseByString(?ease:String = '') {
+		switch (StringTools.trim(ease.toLowerCase())) {
+			case 'backin':
+				return FlxEase.backIn;
+			case 'backinout':
+				return FlxEase.backInOut;
+			case 'backout':
+				return FlxEase.backOut;
+			case 'bouncein':
+				return FlxEase.bounceIn;
+			case 'bounceinout':
+				return FlxEase.bounceInOut;
+			case 'bounceout':
+				return FlxEase.bounceOut;
+			case 'circin':
+				return FlxEase.circIn;
+			case 'circinout':
+				return FlxEase.circInOut;
+			case 'circout':
+				return FlxEase.circOut;
+			case 'cubein':
+				return FlxEase.cubeIn;
+			case 'cubeinout':
+				return FlxEase.cubeInOut;
+			case 'cubeout':
+				return FlxEase.cubeOut;
+			case 'elasticin':
+				return FlxEase.elasticIn;
+			case 'elasticinout':
+				return FlxEase.elasticInOut;
+			case 'elasticout':
+				return FlxEase.elasticOut;
+			case 'expoin':
+				return FlxEase.expoIn;
+			case 'expoinout':
+				return FlxEase.expoInOut;
+			case 'expoout':
+				return FlxEase.expoOut;
+			case 'quadin':
+				return FlxEase.quadIn;
+			case 'quadinout':
+				return FlxEase.quadInOut;
+			case 'quadout':
+				return FlxEase.quadOut;
+			case 'quartin':
+				return FlxEase.quartIn;
+			case 'quartinout':
+				return FlxEase.quartInOut;
+			case 'quartout':
+				return FlxEase.quartOut;
+			case 'quintin':
+				return FlxEase.quintIn;
+			case 'quintinout':
+				return FlxEase.quintInOut;
+			case 'quintout':
+				return FlxEase.quintOut;
+			case 'sinein':
+				return FlxEase.sineIn;
+			case 'sineinout':
+				return FlxEase.sineInOut;
+			case 'sineout':
+				return FlxEase.sineOut;
+			case 'smoothstepin':
+				return FlxEase.smoothStepIn;
+			case 'smoothstepinout':
+				return FlxEase.smoothStepInOut;
+			case 'smoothstepout':
+				return FlxEase.smoothStepInOut;
+			case 'smootherstepin':
+				return FlxEase.smootherStepIn;
+			case 'smootherstepinout':
+				return FlxEase.smootherStepInOut;
+			case 'smootherstepout':
+				return FlxEase.smootherStepOut;
+		}
+		return FlxEase.linear;
+	}
+
+	public static function blendModeFromString(blend:String):BlendMode {
+		switch (StringTools.trim(blend.toLowerCase())) {
+			case 'add':
+				return ADD;
+			case 'alpha':
+				return ALPHA;
+			case 'darken':
+				return DARKEN;
+			case 'difference':
+				return DIFFERENCE;
+			case 'erase':
+				return ERASE;
+			case 'hardlight':
+				return HARDLIGHT;
+			case 'invert':
+				return INVERT;
+			case 'layer':
+				return LAYER;
+			case 'lighten':
+				return LIGHTEN;
+			case 'multiply':
+				return MULTIPLY;
+			case 'overlay':
+				return OVERLAY;
+			case 'screen':
+				return SCREEN;
+			case 'shader':
+				return SHADER;
+			case 'subtract':
+				return SUBTRACT;
+		}
+		return NORMAL;
 	}
 }

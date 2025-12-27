@@ -20,7 +20,6 @@ import openfl.utils.Assets as OpenFlAssets;
 import sys.FileSystem;
 
 import funkin.jit.BuiltinJITState;
-import funkin.jit.LuaObject;
 
 import funkin.component.*;
 import funkin.game.component.HealthIcon;
@@ -415,7 +414,7 @@ class FreeplayState extends BuiltinJITState
 			FlxG.sound.play(Paths.sound('scrollMenu'));
 		}
 		
-		call("onUpdatePost", []);
+		call("onUpdatePost", [elapsed]);
 	}
 
 	override function destroy() {

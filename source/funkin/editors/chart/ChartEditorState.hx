@@ -198,7 +198,7 @@ class ChartEditorState extends BuiltinJITState {
 
             gridBG.setGraphicSize(gridBG.width, GRID_SIZE * _song.notes[curSec].sectionBeats * 4);
         }
-        if (songPos < lastUpdateTime) {
+        if (songPos < lastUpdateTime && songPos > 0) {
             curSec--;
             Conductor.changeBPM(sectionBPM[curSec]);
 

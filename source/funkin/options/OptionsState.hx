@@ -25,7 +25,6 @@ import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
 
-import funkin.jit.LuaObject;
 import funkin.jit.BuiltinJITState;
 
 import funkin.options.menu.*;

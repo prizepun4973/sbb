@@ -17,7 +17,6 @@ import lime.utils.AssetManifest;
 import haxe.io.Path;
 
 import funkin.jit.BuiltinJITState;
-import funkin.jit.LuaObject;
 
 import funkin.component.*;
 import funkin.game.data.StageData;

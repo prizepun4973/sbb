@@ -19,7 +19,6 @@ import lime.net.curl.CURLCode;
 import flixel.graphics.FlxGraphic;
 
 import funkin.jit.BuiltinJITState;
-import funkin.jit.LuaObject;
 
 import funkin.component.*;
 

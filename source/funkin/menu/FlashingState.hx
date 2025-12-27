@@ -12,7 +12,6 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 
 import funkin.jit.BuiltinJITState;
-import funkin.jit.LuaObject;
 
 import funkin.menu.TitleState;
 import funkin.component.*;

@@ -20,7 +20,6 @@ import sys.io.File;
 import lime.utils.Assets;
 
 import funkin.jit.BuiltinJITState;
-import funkin.jit.LuaObject;
 
 import funkin.component.*;
 

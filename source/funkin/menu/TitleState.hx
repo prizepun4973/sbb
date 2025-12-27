@@ -37,7 +37,6 @@ import flixel.util.FlxTimer;
 import openfl.Assets;
 
 import funkin.jit.BuiltinJITState;
-import funkin.jit.LuaObject;
 
 import funkin.component.*;
 import funkin.game.component.shader.ColorSwap;

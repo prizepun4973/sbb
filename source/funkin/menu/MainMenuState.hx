@@ -21,7 +21,6 @@ import lime.app.Application;
 import flixel.input.keyboard.FlxKey;
 
 import funkin.jit.BuiltinJITState;
-import funkin.jit.LuaObject;
 
 import funkin.component.*;
 

@@ -183,7 +183,7 @@ class Paths
 	{
 		return getPath('shaders/$key.vert', TEXT, library);
 	}
-	inline static public function lua(key:String, ?library:String)
+	static public function lua(key:String, ?library:String)
 	{
 		if (FileSystem.exists(mods(currentModDirectory + '/' + key + '.lua')) && currentModDirectory != "") {
 			return mods(currentModDirectory + '/' + key + '.lua');
